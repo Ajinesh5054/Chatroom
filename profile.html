@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card auth">
+<h1>Profile</h1>
+<form method="post">
+<label>Username</label>
+<input name="username" value="{{ user.username }}" required>
+<label>New password (leave blank to keep current)</label>
+<input name="password" type="password">
+<button>Update Profile</button>
+</form>
+</div>
+{% endblock %}

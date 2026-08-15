@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card chat">
+<div class="chat-head"><div><h1>Private Message</h1><p>Conversation with <b>{{ username }}</b></p></div>
+<a class="button" href="{{ url_for('chatrooms') }}">Back</a></div>
+<div id="messages" class="messages"></div>
+<form id="dmForm" class="message-form">
+<input id="dmInput" placeholder="Write a private message..." required>
+<button>Send</button>
+</form>
+</div>
+<script>
+const socket = io();
+const receiver = {{ username|tojson }};
+const messages = document.getElementById("messages");
+const form = document.getElementById("dmForm");
+const input = document.getElementById("dmInput");
+function escapeHtml(v){const d=document.createElement("div");d.textContent=v;return d.innerHTML;}
+function add(d){const x=document.createElement("div");x.className="message";x.innerHTML=`<b>${escapeHtml(d.sender)}</b><span>${escapeHtml(d.timestamp)}</span><p>${escapeHtml(d.content)}</p>`;messages.appendChild(x);}
+form.addEventListener("submit",e=>{e.preventDefault();if(input.value.trim()){socket.emit("private_message",{receiver:receiver,content:input.value});input.value="";}});
+socket.on("receive_private",d=>{if(d.sender===receiver || d.receiver===receiver)add(d);});
+</script>
+{% endblock %}

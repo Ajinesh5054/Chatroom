@@ -1,0 +1,28 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Python Chatroom</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+</head>
+<body>
+<nav>
+  <a href="{{ url_for('chatrooms') }}">Chatroom</a>
+  {% if session.get('username') %}
+    <span>Welcome, {{ session['username'] }}</span>
+    <a href="{{ url_for('profile') }}">Profile</a>
+    <a href="{{ url_for('logout') }}">Logout</a>
+  {% endif %}
+</nav>
+<main>
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <div class="flash">{% for m in messages %}<div>{{ m }}</div>{% endfor %}</div>
+  {% endif %}
+{% endwith %}
+{% block content %}{% endblock %}
+</main>
+</body>
+</html>

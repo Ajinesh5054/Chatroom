@@ -1,0 +1,31 @@
+PROJECT TITLE:
+Chatroom with Real-Time Messaging Using Python
+
+TECHNOLOGIES:
+Python 3.x
+Flask
+Flask-SocketIO
+SQLite
+SQLAlchemy
+HTML5
+CSS3
+JavaScript
+
+MAIN MODULES:
+1. User Authentication
+2. Chatroom Management
+3. Real-Time Messaging
+4. Direct Messaging
+5. Message History
+6. User Presence and Notifications
+7. User Interface
+8. Profile Management
+
+START COMMAND:
+python app.py
+
+URL:
+http://127.0.0.1:5000
+
+DEFAULT ROOM:
+General

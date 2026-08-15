@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Chatrooms</h1>
+<div class="grid">
+<section class="card">
+<h2>Create Chatroom</h2>
+<form method="post" action="{{ url_for('create_room') }}">
+<input name="name" placeholder="Room name" required>
+<input name="description" placeholder="Description">
+<label><input type="checkbox" name="private"> Private room</label>
+<button>Create Room</button>
+</form>
+</section>
+<section class="card">
+<h2>Available Chatrooms</h2>
+{% for r in rooms %}
+<div class="room">
+<div><strong>{{ r.name }}</strong><small>{{ r.description }}</small></div>
+<a class="button" href="{{ url_for('room', room_name=r.name) }}">Join</a>
+</div>
+{% else %}
+<p>No rooms yet.</p>
+{% endfor %}
+</section>
+<section class="card">
+<h2>Users</h2>
+{% for u in users %}
+<div class="user"><span class="{{ 'online' if u.status == 'online' else 'offline' }}">●</span>
+{{ u.username }} — {{ u.status }}
+{% if u.username != session['username'] %}<a href="{{ url_for('dm', username=u.username) }}">Message</a>{% endif %}
+</div>
+{% endfor %}
+</section>
+</div>
+{% endblock %}

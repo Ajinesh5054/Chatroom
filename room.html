@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="chat-layout">
+<section class="chat card">
+<div class="chat-head">
+<div><h1>{{ room.name }}</h1><p>{{ room.description }}</p></div>
+<a class="button" href="{{ url_for('chatrooms') }}">Back</a>
+</div>
+<div id="messages" class="messages">
+{% for m in messages %}
+<div class="message"><b>{{ m.sender }}</b><span>{{ m.timestamp.strftime("%d-%m-%Y %H:%M") }}</span><p>{{ m.content }}</p></div>
+{% endfor %}
+</div>
+<div id="typing"></div>
+<form id="messageForm" class="message-form">
+<input id="messageInput" autocomplete="off" placeholder="Type a message... 😊" required>
+<button>Send</button>
+</form>
+</section>
+<aside class="card">
+<h2>Active Users</h2>
+{% for u in users %}
+<div class="user"><span class="{{ 'online' if u.status == 'online' else 'offline' }}">●</span>{{ u.username }}</div>
+{% endfor %}
+</aside>
+</div>
+<script>
+const socket = io();
+const room = {{ room.name|tojson }};
+const messages = document.getElementById("messages");
+const form = document.getElementById("messageForm");
+const input = document.getElementById("messageInput");
+const typing = document.getElementById("typing");
+
+function addMessage(sender, content, timestamp) {
+  const box = document.createElement("div");
+  box.className = "message";
+  box.innerHTML = `<b>${escapeHtml(sender)}</b><span>${escapeHtml(timestamp)}</span><p>${escapeHtml(content)}</p>`;
+  messages.appendChild(box);
+  messages.scrollTop = messages.scrollHeight;
+}
+function escapeHtml(v) {
+  const d = document.createElement("div"); d.textContent = v; return d.innerHTML;
+}
+socket.emit("join_room", {room: room});
+form.addEventListener("submit", e => {
+  e.preventDefault();
+  if (input.value.trim()) {
+    socket.emit("send_message", {room: room, content: input.value});
+    input.value = "";
+  }
+});
+input.addEventListener("input", () => socket.emit("typing", {room: room}));
+socket.on("receive_message", data => addMessage(data.sender, data.content, data.timestamp));
+socket.on("system_message", data => {
+  const div = document.createElement("div");
+  div.className = "system";
+  div.textContent = data.message + " " + data.timestamp;
+  messages.appendChild(div);
+  messages.scrollTop = messages.scrollHeight;
+});
+socket.on("typing", data => {
+  typing.textContent = data.username + " is typing...";
+  setTimeout(() => typing.textContent = "", 1200);
+});
+window.addEventListener("beforeunload", () => socket.emit("leave_room", {room: room}));
+</script>
+{% endblock %}
